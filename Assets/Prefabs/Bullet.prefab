@@ -13,9 +13,9 @@ GameObject:
   - component: {fileID: 6140565381008376440}
   - component: {fileID: 6051830669442132840}
   - component: {fileID: 7271936263872124519}
-  m_Layer: 6
+  m_Layer: 3
   m_Name: Bullet
-  m_TagString: Untagged
+  m_TagString: Bullet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -181,3 +181,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Projectile
   speed: 18
   lifeSpan: 2
+  hitTag: Enemy

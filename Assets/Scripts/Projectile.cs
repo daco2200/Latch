@@ -6,6 +6,7 @@ public class Projectile : MonoBehaviour
 {
     [SerializeField] private float speed;
     [SerializeField] private float lifeSpan;
+    [SerializeField] private string hitTag = "Enemy";
 
     private Rigidbody2D rb2d;
     private Coroutine lifeCoroutine;
@@ -34,10 +35,8 @@ public class Projectile : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Enemy"))
-        {
+        if (collision.CompareTag(hitTag))
             gameObject.SetActive(false);
-        }
     }
 
     private IEnumerator DeactivateBullet()
