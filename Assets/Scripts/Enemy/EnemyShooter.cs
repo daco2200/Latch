@@ -35,6 +35,6 @@ public class EnemyShooter : MonoBehaviour
         Vector2 toPlayer = (target.position - transform.position).normalized;
         Vector2 dir = Quaternion.Euler(0f, 0f, Random.Range(-spread, spread)) * toPlayer;
         pool.Fire(transform.position, dir);
-        timer += interval;
+        timer += interval * GameFlow.IntervalScale;
     }
 }

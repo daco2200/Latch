@@ -41,7 +41,7 @@ public class EnemySpawner : MonoBehaviour
         if (timer > 0f) return;
 
         TrySpawn();
-        timer = spawnInterval;
+        timer = spawnInterval * GameFlow.IntervalScale;
     }
 
     private bool TrySpawn()

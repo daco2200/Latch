@@ -22,7 +22,6 @@ public class AimController : MonoBehaviour
     {
         Vector2 mousePosition = pointAction.ReadValue<Vector2>();
 
-        // Pointer Clamp
         Vector3 viewportPosition = mainCamera.ScreenToViewportPoint(mousePosition);
 
         viewportPosition.x = Mathf.Clamp(viewportPosition.x, 0f, 1f);

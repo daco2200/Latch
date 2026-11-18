@@ -35,6 +35,7 @@ public class PlayerShoot : MonoBehaviour
 
     private void Update()
     {
+        if (Time.timeScale == 0f) return;
         if (cooldown > 0f) cooldown -= Time.deltaTime;
 
         bool holding = shootAction.IsPressed();

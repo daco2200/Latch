@@ -4,15 +4,16 @@ using UnityEngine;
 
 public class EnemyLife : MonoBehaviour
 {
+    public static event System.Action<EnemyLife> AnyDied;
+    public event System.Action<EnemyLife> Died;
+
     [SerializeField] private int life = 3;
     [SerializeField] private float cooldown = 2f;
-
-    private int maxLife;
+    [SerializeField] private bool respawn;
+    
     private Collider2D enemyCollider;
     private SpriteRenderer spriteRenderer;
-
-    public event System.Action<EnemyLife> Died;
-    [SerializeField] private bool respawn;
+    private int maxLife;
 
     private void Awake()
     {
@@ -31,6 +32,7 @@ public class EnemyLife : MonoBehaviour
         if (life <= 0)
         {
             Died?.Invoke(this);
+            AnyDied?.Invoke(this);
             if (respawn) StartCoroutine(Respawn());
             else Destroy(gameObject);
         }
