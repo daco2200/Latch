@@ -10,6 +10,7 @@ public class PlayerShoot : MonoBehaviour
     [SerializeField] private Transform pool;
     [SerializeField] private Transform pod;
     [SerializeField] private Transform pointer;
+    [SerializeField] private PlayerEnergy energy;
     [SerializeField] private int bulletQuantity = 12;
     [SerializeField] private float fireInterval = 0.5f;
 
@@ -23,7 +24,9 @@ public class PlayerShoot : MonoBehaviour
 
     private void Start()
     {
-        for (int i = 0; i < bulletQuantity; i++)
+        int count = Mathf.Max(bulletQuantity, energy.MaxBullets);
+
+        for (int i = 0; i < count; i++)
         {
             GameObject bullet = Instantiate(bulletPrefab, pool);
             bullet.SetActive(false);
@@ -33,9 +36,13 @@ public class PlayerShoot : MonoBehaviour
     private void Update()
     {
         if (cooldown > 0f) cooldown -= Time.deltaTime;
-        if (shootAction.IsPressed() && cooldown <= 0f)
+
+        bool holding = shootAction.IsPressed();
+        energy.SetHolding(holding);
+
+        if (holding && energy.CanFire && cooldown <= 0f)
         {
-            for (int i = 0;i < pool.childCount; i++)
+            for (int i = 0; i < pool.childCount; i++)
             {
                 GameObject bullet = pool.GetChild(i).gameObject;
 
@@ -47,6 +54,7 @@ public class PlayerShoot : MonoBehaviour
                     bullet.transform.rotation = Quaternion.Euler(0f, 0f, angle - 90f);
                     cooldown += fireInterval;
                     bullet.SetActive(true);
+                    energy.TrySpend();
                     return;
                 }
             }

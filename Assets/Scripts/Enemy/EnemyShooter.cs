@@ -5,7 +5,7 @@ public class EnemyShooter : MonoBehaviour
 {
     [SerializeField] private Vector2 intervalRange = new Vector2(1.5f, 3.5f);
     [SerializeField] private Vector2 firstDelayRange = new Vector2(0.3f, 2f);
-    [SerializeField] private float spread = 12f;   // degrees, random around the player direction
+    [SerializeField] private float spread = 12f;
 
     private EnemyMover mover;
     private EnemyBulletPool pool;

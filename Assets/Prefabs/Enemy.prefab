@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 4474425253756942506}
   - component: {fileID: 8891134287923722788}
   - component: {fileID: 7875056554895297117}
-  - component: {fileID: 6026998398053222450}
+  - component: {fileID: -4057302743957212972}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Enemy
@@ -200,7 +200,7 @@ MonoBehaviour:
   strafeChance: 0.4
   strafeSpeedRange: {x: 0.8, y: 2}
   strafeAmplitudeRange: {x: 0.3, y: 1}
---- !u!114 &6026998398053222450
+--- !u!114 &-4057302743957212972
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -209,10 +209,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1495955856205603636}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9626183044b8c644485b87230c658ef8, type: 3}
+  m_Script: {fileID: 11500000, guid: 7d4d189b4727fb948b8e6bb3862227d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyShooter
   intervalRange: {x: 1.5, y: 3.5}
   firstDelayRange: {x: 0.3, y: 2}
-  aimRange: 35
-  shotJitter: 8
+  spread: 12
