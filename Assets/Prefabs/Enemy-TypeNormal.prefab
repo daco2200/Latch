@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 7875056554895297117}
   - component: {fileID: -4057302743957212972}
   m_Layer: 6
-  m_Name: Enemy
+  m_Name: Enemy-TypeNormal
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -214,8 +214,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyShooter
   patterns:
   - {fileID: 11400000, guid: 3c401fddd167023458687d21984dbd87, type: 2}
-  - {fileID: 11400000, guid: 0292670767781db43a63fa591e66668f, type: 2}
-  - {fileID: 11400000, guid: f8a5d4b22029a1d4e9e741186edf1683, type: 2}
-  - {fileID: 11400000, guid: a3efc5eec1934a84c907fa4a9232aee3, type: 2}
-  - {fileID: 11400000, guid: 9307452f0ca037a4cb3914aca0235707, type: 2}
   firstDelayRange: {x: 0.3, y: 1}

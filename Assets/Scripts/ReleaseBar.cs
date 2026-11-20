@@ -16,7 +16,10 @@ public class ReleaseBar : MonoBehaviour
 
     private void Awake()
     {
-        pullAction = GetComponent<PlayerInput>().actions.FindAction("Pull");
+        PlayerInput input = GetComponent<PlayerInput>();
+        pullAction = input != null ? input.actions.FindAction("Pull", false) : null;
+        if (pullAction == null)
+            Debug.LogError("ReleaseBar: action 'Pull' not found. Is this on the same object as PlayerInput?", this);
     }
 
     private void OnEnable()
@@ -44,7 +47,14 @@ public class ReleaseBar : MonoBehaviour
     {
         if (fill != null) fill.fillAmount = Fill01;
 
-        if (pullAction != null && pullAction.WasPressedThisFrame() && IsFull)
-            GameFlow.Instance.Pull();
+        if (pullAction != null && pullAction.WasPressedThisFrame())
+        {
+            Debug.Log($"Pull pressed. Full: {IsFull} ({Value}/{capacity})");
+            if (IsFull)
+            {
+                GameFlow.Instance.Pull();
+                Debug.Log("Pull executed");
+            }
+        }
     }
 }

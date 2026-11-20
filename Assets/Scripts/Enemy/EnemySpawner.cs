@@ -3,8 +3,11 @@ using System.Collections.Generic;
 
 public class EnemySpawner : MonoBehaviour
 {
-    [Header("Prefab and pool")]
-    [SerializeField] private GameObject[] enemyPrefabs;
+    [Header("Prefabs and limits per phase")]
+    [SerializeField] private GameObject[] stablePrefabs;   // normal enemies, aimed shot only
+    [SerializeField] private GameObject[] masterPrefabs;   // variants with other patterns
+    [SerializeField] private int stableMaxAlive = 2;
+    [SerializeField] private int masterMaxAlive = 6;
     [SerializeField] private EnemyBulletPool bulletPool;
 
     [Header("Rail (centered on this transform)")]
@@ -46,6 +49,14 @@ public class EnemySpawner : MonoBehaviour
 
     private bool TrySpawn()
     {
+        Phase phase = GameFlow.Instance != null ? GameFlow.Instance.Current : Phase.Stable;
+        if (phase != Phase.Stable && phase != Phase.Challenge) return false;
+
+        bool master = phase == Phase.Challenge;
+        GameObject[] prefabs = master ? masterPrefabs : stablePrefabs;
+        int cap = master ? masterMaxAlive : stableMaxAlive;
+        if (prefabs == null || prefabs.Length == 0 || AliveCount() >= cap) return false;
+
         slotCandidates.Clear();
         for (int i = 0; i < slotCount; i++)
         {
@@ -63,7 +74,7 @@ public class EnemySpawner : MonoBehaviour
         float offset = Random.Range(-jitter, jitter) * slotW;
         float maxAmp = Mathf.Max(0f, slotW * 0.5f - enemyHalfWidth - Mathf.Abs(offset));
 
-        GameObject go = Instantiate(enemyPrefabs[Random.Range(0, enemyPrefabs.Length)],
+        GameObject go = Instantiate(prefabs[Random.Range(0, prefabs.Length)],
             new Vector3(center + offset, transform.position.y, 0f), Quaternion.identity);
 
         go.GetComponent<EnemyMover>().Init(rowY[row], maxAmp);
@@ -107,5 +118,13 @@ public class EnemySpawner : MonoBehaviour
         Gizmos.color = Color.cyan;
         foreach (float y in rowY)
             Gizmos.DrawLine(new Vector3(c.x - railHalfWidth, y, 0f), new Vector3(c.x + railHalfWidth, y, 0f));
+    }
+
+    private int AliveCount()
+    {
+        int n = 0;
+        for (int i = 0; i < occupants.Length; i++)
+            if (occupants[i] != null) n++;
+        return n;
     }
 }

@@ -1918,8 +1918,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ec7bbd30e8e48548bff9cfbcf832e89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
-  enemyPrefabs:
+  stablePrefabs:
   - {fileID: 1495955856205603636, guid: 246cf03cabcccf9489fed41aef91bea6, type: 3}
+  masterPrefabs:
+  - {fileID: 1495955856205603636, guid: 7892e051d0f039a4e8fca64212f614cb, type: 3}
+  stableMaxAlive: 2
+  masterMaxAlive: 6
   bulletPool: {fileID: 1294056385}
   railHalfWidth: 8
   slotCount: 8
