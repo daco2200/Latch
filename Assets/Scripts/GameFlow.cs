@@ -5,16 +5,16 @@ using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
 #endif
 
-public enum Phase { Title, Calm, Challenge, Victory, GameOver }
-public enum FailReason { Pull }
+public enum Phase { Title, Stable, Challenge, Victory, GameOver }
+public enum ChallengeResult { Won, TimedOut, Pulled }
 
 public class GameFlow : MonoBehaviour
 {
     public static GameFlow Instance { get; private set; }
-    private static bool skipTitle;   // set by Restart so the game starts directly
+    private static bool skipTitle;
 
-    [Header("Calm phase (seconds)")]
-    [SerializeField] private Vector2 calmDurationRange = new Vector2(90f, 120f);
+    [Header("Stable phase (seconds)")]
+    [SerializeField] private Vector2 stableDurationRange = new Vector2(30f, 45f);
 
     [Header("Challenges: one entry per win needed")]
     [SerializeField] private int[] killTargets = { 8, 12, 16 };
@@ -22,38 +22,35 @@ public class GameFlow : MonoBehaviour
 
     [Header("Escalation")]
     [SerializeField, Range(0.2f, 1f)] private float minIntervalScale = 0.5f;
+    [SerializeField] private float stableIntervalScale = 2f;   // >1 = slower spawning and fire during STABLE
 
-    [Header("Overtime drain (life per second)")]
-    [SerializeField] private float baseDrain = 1f;
-    [SerializeField] private float rampInterval = 10f;
-    [SerializeField] private float rampStep = 1f;
 
     public Phase Current { get; private set; } = Phase.Title;
     public float TimeLeft { get; private set; }
-    public float OvertimeSeconds { get; private set; }
     public int Wins { get; private set; }
 
-    public bool IsOvertime => Current == Phase.Challenge && TimeLeft <= 0f;
-
-    public float DrainPerSecond => IsOvertime
-        ? baseDrain + rampStep * Mathf.Floor(OvertimeSeconds / rampInterval)
+    public float ChallengeProgress01 => Current == Phase.Challenge
+        ? 1f - Mathf.Clamp01(TimeLeft / challengeTime)
         : 0f;
-
-    public float Aggression01 => Current != Phase.Challenge ? 0f
-        : 1f - Mathf.Clamp01(TimeLeft / challengeTime);
 
     public string ChallengeTitle => challenge != null ? challenge.Title : "";
     public string ChallengeStatus => challenge != null ? challenge.Status : "";
 
-    public static float IntervalScale =>
-        Instance != null ? Mathf.Lerp(1f, Instance.minIntervalScale, Instance.Aggression01) : 1f;
+    public static float IntervalScale
+    {
+        get
+        {
+            if (Instance == null) return 1f;
+            if (Instance.Current == Phase.Stable) return Instance.stableIntervalScale;
+            return Mathf.Lerp(1f, Instance.minIntervalScale, Instance.ChallengeProgress01);
+        }
+    }
 
+    public static event Action<ChallengeResult> ChallengeEnded;
     public event Action<Phase> PhaseChanged;
-    public event Action<FailReason> ChallengeFailed;
-    public event Action ChallengeCompleted;
 
     private IChallenge challenge;
-    private float calmTimer;
+    private float stableTimer;
 
     private void Awake() => Instance = this;
 
@@ -78,27 +75,26 @@ public class GameFlow : MonoBehaviour
     private void Update()
     {
 #if UNITY_EDITOR
-        if (Keyboard.current != null && Keyboard.current.pKey.wasPressedThisFrame) Pull();   // debug until the release bar exists
+        if (Keyboard.current != null && Keyboard.current.pKey.wasPressedThisFrame) Pull();
 #endif
         switch (Current)
         {
-            case Phase.Calm:
-                calmTimer -= Time.deltaTime;
-                if (calmTimer <= 0f) StartChallenge();
+            case Phase.Stable:
+                stableTimer -= Time.deltaTime;
+                if (stableTimer <= 0f) StartChallenge();
                 break;
 
             case Phase.Challenge:
-                if (TimeLeft > 0f) TimeLeft = Mathf.Max(0f, TimeLeft - Time.deltaTime);
-                else OvertimeSeconds += Time.deltaTime;
+                TimeLeft = Mathf.Max(0f, TimeLeft - Time.deltaTime);
+                if (TimeLeft <= 0f) EndChallenge(ChallengeResult.TimedOut);
                 break;
         }
     }
 
-    // Called by the Start button
     public void StartGame()
     {
         Time.timeScale = 1f;
-        EnterCalm();
+        EnterStable();
     }
 
     public void Restart()
@@ -110,9 +106,7 @@ public class GameFlow : MonoBehaviour
 
     public void Pull()
     {
-        if (Current != Phase.Challenge) return;
-        ChallengeFailed?.Invoke(FailReason.Pull);
-        EnterCalm();
+        if (Current == Phase.Challenge) EndChallenge(ChallengeResult.Pulled);
     }
 
     private IChallenge CreateChallenge(int index) => new KillChallenge(killTargets[index]);
@@ -122,7 +116,6 @@ public class GameFlow : MonoBehaviour
         challenge = CreateChallenge(Wins);
         challenge.Begin();
         TimeLeft = challengeTime;
-        OvertimeSeconds = 0f;
         SetPhase(Phase.Challenge);
     }
 
@@ -131,20 +124,22 @@ public class GameFlow : MonoBehaviour
         if (Current != Phase.Challenge) return;
 
         challenge.OnEnemyKilled();
-        if (challenge.IsComplete) Complete();
+        if (challenge.IsComplete) EndChallenge(ChallengeResult.Won);
     }
 
-    private void Complete()
+    private void EndChallenge(ChallengeResult result)
     {
-        Wins++;
-        ChallengeCompleted?.Invoke();
+        if (result == ChallengeResult.Won) Wins++;
 
-        if (Wins >= killTargets.Length)
+        ChallengeEnded?.Invoke(result);
+        if (Current == Phase.GameOver) return;
+
+        if (result == ChallengeResult.Won && Wins >= killTargets.Length)
         {
             SetPhase(Phase.Victory);
             Time.timeScale = 0f;
         }
-        else EnterCalm();
+        else EnterStable();
     }
 
     private void GameOver()
@@ -154,11 +149,11 @@ public class GameFlow : MonoBehaviour
         Time.timeScale = 0f;
     }
 
-    private void EnterCalm()
+    private void EnterStable()
     {
         challenge = null;
-        calmTimer = UnityEngine.Random.Range(calmDurationRange.x, calmDurationRange.y);
-        SetPhase(Phase.Calm);
+        stableTimer = UnityEngine.Random.Range(stableDurationRange.x, stableDurationRange.y);
+        SetPhase(Phase.Stable);
     }
 
     private void SetPhase(Phase phase)

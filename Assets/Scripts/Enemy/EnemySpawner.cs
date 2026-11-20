@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public class EnemySpawner : MonoBehaviour
 {
     [Header("Prefab and pool")]
-    [SerializeField] private GameObject enemyPrefab;
+    [SerializeField] private GameObject[] enemyPrefabs;
     [SerializeField] private EnemyBulletPool bulletPool;
 
     [Header("Rail (centered on this transform)")]
@@ -63,7 +63,7 @@ public class EnemySpawner : MonoBehaviour
         float offset = Random.Range(-jitter, jitter) * slotW;
         float maxAmp = Mathf.Max(0f, slotW * 0.5f - enemyHalfWidth - Mathf.Abs(offset));
 
-        GameObject go = Instantiate(enemyPrefab,
+        GameObject go = Instantiate(enemyPrefabs[Random.Range(0, enemyPrefabs.Length)],
             new Vector3(center + offset, transform.position.y, 0f), Quaternion.identity);
 
         go.GetComponent<EnemyMover>().Init(rowY[row], maxAmp);

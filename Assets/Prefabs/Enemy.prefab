@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 8891134287923722788}
   - component: {fileID: 7875056554895297117}
   - component: {fileID: -4057302743957212972}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Enemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -181,7 +181,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c14b7a319fc888c448f25811f836f471, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyLife
-  life: 3
+  life: 10
   cooldown: 2
   respawn: 0
 --- !u!114 &7875056554895297117
@@ -196,7 +196,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a042a10a090916d4595e27b9dbf03516, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMover
-  speed: 1.5
+  speed: 3
   strafeChance: 0.4
   strafeSpeedRange: {x: 0.8, y: 2}
   strafeAmplitudeRange: {x: 0.3, y: 1}
@@ -212,6 +212,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d4d189b4727fb948b8e6bb3862227d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyShooter
-  intervalRange: {x: 1.5, y: 3.5}
-  firstDelayRange: {x: 0.3, y: 2}
-  spread: 12
+  patterns:
+  - {fileID: 11400000, guid: 3c401fddd167023458687d21984dbd87, type: 2}
+  - {fileID: 11400000, guid: 0292670767781db43a63fa591e66668f, type: 2}
+  - {fileID: 11400000, guid: f8a5d4b22029a1d4e9e741186edf1683, type: 2}
+  - {fileID: 11400000, guid: a3efc5eec1934a84c907fa4a9232aee3, type: 2}
+  - {fileID: 11400000, guid: 9307452f0ca037a4cb3914aca0235707, type: 2}
+  firstDelayRange: {x: 0.3, y: 1}

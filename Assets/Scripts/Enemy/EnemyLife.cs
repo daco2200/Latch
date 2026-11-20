@@ -5,6 +5,8 @@ using UnityEngine;
 public class EnemyLife : MonoBehaviour
 {
     public static event System.Action<EnemyLife> AnyDied;
+    public static event System.Action<EnemyLife> AnyHit;
+
     public event System.Action<EnemyLife> Died;
 
     [SerializeField] private int life = 3;
@@ -22,6 +24,14 @@ public class EnemyLife : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
+    public void Dissolve()
+    {
+        if (life <= 0) return;
+        life = 0;
+        Died?.Invoke(this);   // frees its spawner slot; AnyDied is NOT raised, so it doesn't count as a kill
+        Destroy(gameObject);
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (!collision.CompareTag("Bullet")) return;
@@ -33,6 +43,7 @@ public class EnemyLife : MonoBehaviour
         {
             Died?.Invoke(this);
             AnyDied?.Invoke(this);
+            AnyHit?.Invoke(this);
             if (respawn) StartCoroutine(Respawn());
             else Destroy(gameObject);
         }

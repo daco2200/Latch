@@ -40,4 +40,14 @@ public class EnemyBulletPool : MonoBehaviour
         peakInUse = Mathf.Max(peakInUse, inUse + 1);
         return true;
     }
+
+    public void ClearWithin(Vector2 center, float radius)
+    {
+        float r2 = radius * radius;
+        foreach (GameObject b in bullets)
+        {
+            if (b.activeSelf && ((Vector2)b.transform.position - center).sqrMagnitude <= r2)
+                b.SetActive(false);
+        }
+    }
 }

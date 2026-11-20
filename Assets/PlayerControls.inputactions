@@ -27,7 +27,7 @@
                     "priority": 0
                 },
                 {
-                    "name": "Shift",
+                    "name": "Pull",
                     "type": "Button",
                     "id": "4fbfc284-54c4-446f-98ec-07cfd8e46290",
                     "expectedControlType": "",
@@ -99,7 +99,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Shift",
+                    "action": "Pull",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

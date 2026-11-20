@@ -10,6 +10,10 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private float hullRegenDelay = 3f;
     [SerializeField] private float hullRegenPerSecond = 5f;
 
+    [Header("Corruption")]
+    [SerializeField, Range(0f, 1f)] private float maxCorruptionFraction = 0.333f;
+    [SerializeField] private float corruptionCurve = 2f;
+
     [Header("Life (does not recover)")]
     [SerializeField] private float maxLife = 100f;
 
@@ -26,6 +30,21 @@ public class PlayerHealth : MonoBehaviour
     private float lastHitTime = -999f;
     private float invulnerableUntil;
 
+    public float CorruptionPoints =>
+        GameFlow.Instance != null && GameFlow.Instance.Current == Phase.Challenge
+            ? maxLife * maxCorruptionFraction * Mathf.Pow(GameFlow.Instance.ChallengeProgress01, corruptionCurve)
+            : 0f;
+    public float Corruption01 => maxLife > 0f ? CorruptionPoints / maxLife : 0f;
+
+    private void OnEnable() => GameFlow.ChallengeEnded += OnChallengeEnded;
+    private void OnDisable() => GameFlow.ChallengeEnded -= OnChallengeEnded;
+
+    private void OnChallengeEnded(ChallengeResult result)
+    {
+        if (result == ChallengeResult.Won) return;
+        LoseLife(CorruptionPoints);
+    }
+
     private void Awake()
     {
         Hull = maxHull;
@@ -35,12 +54,6 @@ public class PlayerHealth : MonoBehaviour
     private void Update()
     {
         if (IsDead) return;
-
-        if (GameFlow.Instance != null)
-        {
-            float drain = GameFlow.Instance.DrainPerSecond;
-            if (drain > 0f) LoseLife(drain * Time.deltaTime);
-        }
 
         if (Hull < maxHull && Time.time - lastHitTime >= hullRegenDelay)
             Hull = Mathf.Min(maxHull, Hull + hullRegenPerSecond * Time.deltaTime);
