@@ -12,7 +12,9 @@ public class EnemyLife : MonoBehaviour
     [SerializeField] private int life = 3;
     [SerializeField] private float cooldown = 2f;
     [SerializeField] private bool respawn;
-    
+    [SerializeField] private bool isBoss;
+    public bool IsBoss => isBoss;
+
     private Collider2D enemyCollider;
     private SpriteRenderer spriteRenderer;
     private int maxLife;

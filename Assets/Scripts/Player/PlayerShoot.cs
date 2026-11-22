@@ -41,7 +41,7 @@ public class PlayerShoot : MonoBehaviour
         bool holding = shootAction.IsPressed();
         energy.SetHolding(holding);
 
-        if (holding && energy.CanFire && cooldown <= 0f)
+        if (holding && energy.CanFire && !RuleState.WeaponJammed && cooldown <= 0f)
         {
             for (int i = 0; i < pool.childCount; i++)
             {

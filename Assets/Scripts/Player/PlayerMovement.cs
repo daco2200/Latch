@@ -20,6 +20,7 @@ public class PlayerMovement : MonoBehaviour
     private void FixedUpdate()
     {
         float moveX = moveAction.ReadValue<float>();
+        if (RuleState.InvertControls) moveX = -moveX;
 
         rb2d.linearVelocity = new Vector2(moveX * speed, 0f);
 

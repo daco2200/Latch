@@ -4,14 +4,15 @@ using UnityEngine;
 [RequireComponent(typeof(EnemyMover))]
 public class EnemyShooter : MonoBehaviour
 {
-    [SerializeField] private BulletPattern[] patterns;    // one is picked at random per enemy
+    [SerializeField] private BulletPattern[] patterns;
+    [SerializeField] private bool changePatternEachShot;      // ON for the boss
     [SerializeField] private Vector2 firstDelayRange = new Vector2(0.3f, 2f);
 
     private EnemyMover mover;
     private EnemyBulletPool pool;
     private PatternContext context;
     private BulletPattern pattern;
-    private float interval, timer;
+    private float jitter, timer;
     private bool firing;
 
     private void Awake()
@@ -25,8 +26,8 @@ public class EnemyShooter : MonoBehaviour
             return;
         }
 
-        pattern = patterns[Random.Range(0, patterns.Length)];
-        interval = pattern.cooldown * Random.Range(0.8f, 1.25f);
+        pattern = Pick();
+        jitter = Random.Range(0.8f, 1.25f);
         timer = Random.Range(firstDelayRange.x, firstDelayRange.y);
 
         PlayerHealth player = FindFirstObjectByType<PlayerHealth>();
@@ -43,15 +44,18 @@ public class EnemyShooter : MonoBehaviour
         if (context != null) context.pool = bulletPool;
     }
 
+    private BulletPattern Pick() => patterns[Random.Range(0, patterns.Length)];
+
     private void Update()
     {
-        if (!mover.Arrived || pool == null || firing) return;   // only shoots once stopped
+        if (!mover.Arrived || pool == null || firing) return;
 
         timer -= Time.deltaTime;
         if (timer > 0f) return;
 
+        if (changePatternEachShot) pattern = Pick();
         StartCoroutine(Run());
-        timer += interval * GameFlow.IntervalScale;
+        timer += pattern.cooldown * jitter * GameFlow.IntervalScale;
     }
 
     private IEnumerator Run()

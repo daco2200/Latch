@@ -16,21 +16,28 @@ public class GameFlow : MonoBehaviour
     [Header("Stable phase (seconds)")]
     [SerializeField] private Vector2 stableDurationRange = new Vector2(30f, 45f);
 
-    [Header("Challenges: one entry per win needed")]
+    [Header("Targets per level (index 0 = level 1)")]
     [SerializeField] private int[] killTargets = { 8, 12, 16 };
-    [SerializeField] private float challengeTime = 45f;
+    [SerializeField] private int[] markedTargets = { 4, 8, 12 };
+
+    [Header("Time limits (seconds)")]
+    [SerializeField] private float[] levelTimes = { 35f, 45f, 60f };   // index 0 = level 1
+    [SerializeField] private float bossTime = 70f;
 
     [Header("Escalation")]
     [SerializeField, Range(0.2f, 1f)] private float minIntervalScale = 0.5f;
-    [SerializeField] private float stableIntervalScale = 2f;   // >1 = slower spawning and fire during STABLE
-
+    [SerializeField] private float stableIntervalScale = 2f;
 
     public Phase Current { get; private set; } = Phase.Title;
     public float TimeLeft { get; private set; }
     public int Wins { get; private set; }
 
-    public float ChallengeProgress01 => Current == Phase.Challenge
-        ? 1f - Mathf.Clamp01(TimeLeft / challengeTime)
+    public int LevelCount => killTargets.Length;    // challenges before the boss
+    public bool IsBossChallenge => challenge != null && challenge.IsBoss;
+    public bool MarkingActive => Current == Phase.Challenge && challenge != null && challenge.UsesMarks;
+
+    public float ChallengeProgress01 => Current == Phase.Challenge && timeLimit > 0f
+        ? 1f - Mathf.Clamp01(TimeLeft / timeLimit)
         : 0f;
 
     public string ChallengeTitle => challenge != null ? challenge.Title : "";
@@ -46,13 +53,19 @@ public class GameFlow : MonoBehaviour
         }
     }
 
-    public static event Action<ChallengeResult> ChallengeEnded;
+    public static event Action<IChallenge> ChallengeStarted;
+    public static event Action<ChallengeResult> ChallengeEnded;   // raised BEFORE leaving the challenge phase
     public event Action<Phase> PhaseChanged;
 
     private IChallenge challenge;
     private float stableTimer;
+    private float timeLimit;
 
-    private void Awake() => Instance = this;
+    private void Awake()
+    {
+        Instance = this;
+        EnemyMark.ResetCount();
+    }
 
     private void OnEnable()
     {
@@ -75,7 +88,7 @@ public class GameFlow : MonoBehaviour
     private void Update()
     {
 #if UNITY_EDITOR
-        if (Keyboard.current != null && Keyboard.current.pKey.wasPressedThisFrame) Pull();
+        if (Keyboard.current != null && Keyboard.current.pKey.wasPressedThisFrame) Pull();   // debug: ignores the release bar
 #endif
         switch (Current)
         {
@@ -97,7 +110,7 @@ public class GameFlow : MonoBehaviour
         EnterStable();
     }
 
-    public void Restart()
+    public void Restart()   // the scene must be in Build Settings
     {
         skipTitle = true;
         Time.timeScale = 1f;
@@ -109,21 +122,35 @@ public class GameFlow : MonoBehaviour
         if (Current == Phase.Challenge) EndChallenge(ChallengeResult.Pulled);
     }
 
-    private IChallenge CreateChallenge(int index) => new KillChallenge(killTargets[index]);
+    // Add new objectives here (and a new case in the Random range)
+    private IChallenge CreateChallenge()
+    {
+        if (Wins >= LevelCount) return new BossChallenge();
+
+        int level = Wins;
+        switch (UnityEngine.Random.Range(0, 2))
+        {
+            case 0: return new KillChallenge(killTargets[level]);
+            default: return new MarkedKillChallenge(markedTargets[level]);
+        }
+    }
 
     private void StartChallenge()
     {
-        challenge = CreateChallenge(Wins);
+        challenge = CreateChallenge();
         challenge.Begin();
-        TimeLeft = challengeTime;
+        timeLimit = challenge.IsBoss ? bossTime : levelTimes[Mathf.Min(Wins, levelTimes.Length - 1)];
+        TimeLeft = timeLimit;
+
         SetPhase(Phase.Challenge);
+        ChallengeStarted?.Invoke(challenge);
     }
 
     private void OnEnemyDied(EnemyLife enemy)
     {
         if (Current != Phase.Challenge) return;
 
-        challenge.OnEnemyKilled();
+        challenge.OnEnemyKilled(enemy);
         if (challenge.IsComplete) EndChallenge(ChallengeResult.Won);
     }
 
@@ -131,10 +158,10 @@ public class GameFlow : MonoBehaviour
     {
         if (result == ChallengeResult.Won) Wins++;
 
-        ChallengeEnded?.Invoke(result);
-        if (Current == Phase.GameOver) return;
+        ChallengeEnded?.Invoke(result);          // PlayerHealth applies corruption here (it can kill)
+        if (Current == Phase.GameOver) return;   // the player died to corruption
 
-        if (result == ChallengeResult.Won && Wins >= killTargets.Length)
+        if (result == ChallengeResult.Won && Wins > LevelCount)   // the boss was the last step
         {
             SetPhase(Phase.Victory);
             Time.timeScale = 0f;

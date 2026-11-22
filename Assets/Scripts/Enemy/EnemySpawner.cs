@@ -23,6 +23,15 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] private int minSlotDistance = 2;
     [SerializeField, Range(0f, 0.4f)] private float jitter = 0.1f;
 
+    [Header("Marks")]
+    [SerializeField, Range(0f, 1f)] private float markChance = 0.4f;
+
+    [Header("Boss")]
+    [SerializeField] private GameObject bossPrefab;
+    [SerializeField] private float bossStopY = 4f;
+    [SerializeField] private float bossMaxStrafe = 3f;
+    [SerializeField] private int bossEscortMaxAlive = 0;    // other enemies allowed during the boss
+
     private EnemyLife[] occupants;
     private int[] slotRow;
     private readonly List<int> slotCandidates = new List<int>();
@@ -31,6 +40,22 @@ public class EnemySpawner : MonoBehaviour
     private int lastSlot = -99;
 
     private float SlotWidth => 2f * railHalfWidth / slotCount;
+
+    private void OnEnable() => GameFlow.ChallengeStarted += OnChallengeStarted;
+    private void OnDisable() => GameFlow.ChallengeStarted -= OnChallengeStarted;
+
+    private void OnChallengeStarted(IChallenge challenge)
+    {
+        if (challenge.IsBoss) SpawnBoss();
+    }
+
+    private void SpawnBoss()
+    {
+        GameObject go = Instantiate(bossPrefab,
+            new Vector3(transform.position.x, transform.position.y, 0f), Quaternion.identity);
+        go.GetComponent<EnemyMover>().Init(bossStopY, bossMaxStrafe);
+        go.GetComponent<EnemyShooter>().Init(bulletPool);
+    }
 
     private void Awake()
     {
@@ -53,8 +78,9 @@ public class EnemySpawner : MonoBehaviour
         if (phase != Phase.Stable && phase != Phase.Challenge) return false;
 
         bool master = phase == Phase.Challenge;
+        bool bossFight = GameFlow.Instance != null && GameFlow.Instance.IsBossChallenge;
         GameObject[] prefabs = master ? masterPrefabs : stablePrefabs;
-        int cap = master ? masterMaxAlive : stableMaxAlive;
+        int cap = bossFight ? bossEscortMaxAlive : master ? masterMaxAlive : stableMaxAlive;
         if (prefabs == null || prefabs.Length == 0 || AliveCount() >= cap) return false;
 
         slotCandidates.Clear();
@@ -76,6 +102,11 @@ public class EnemySpawner : MonoBehaviour
 
         GameObject go = Instantiate(prefabs[Random.Range(0, prefabs.Length)],
             new Vector3(center + offset, transform.position.y, 0f), Quaternion.identity);
+
+        bool mark = GameFlow.Instance != null && GameFlow.Instance.MarkingActive
+            && (EnemyMark.AliveMarked == 0 || Random.value < markChance);
+        EnemyMark enemyMark = go.GetComponent<EnemyMark>();
+        if (enemyMark != null) enemyMark.SetMarked(mark);
 
         go.GetComponent<EnemyMover>().Init(rowY[row], maxAmp);
         go.GetComponent<EnemyShooter>().Init(bulletPool);

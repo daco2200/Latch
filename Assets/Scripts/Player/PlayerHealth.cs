@@ -13,6 +13,7 @@ public class PlayerHealth : MonoBehaviour
     [Header("Corruption")]
     [SerializeField, Range(0f, 1f)] private float maxCorruptionFraction = 0.333f;
     [SerializeField] private float corruptionCurve = 2f;
+    [SerializeField, Range(0f, 1f)] private float pullCorruptionMultiplier = 0.5f;
 
     [Header("Life (does not recover)")]
     [SerializeField] private float maxLife = 100f;
@@ -42,7 +43,9 @@ public class PlayerHealth : MonoBehaviour
     private void OnChallengeEnded(ChallengeResult result)
     {
         if (result == ChallengeResult.Won) return;
-        LoseLife(CorruptionPoints);
+
+        float multiplier = result == ChallengeResult.Pulled ? pullCorruptionMultiplier : 1f;
+        LoseLife(CorruptionPoints * multiplier);   // ignores hull and can kill
     }
 
     private void Awake()

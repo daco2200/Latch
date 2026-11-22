@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: New Curtain Pattern
   m_EditorClassIdentifier: Assembly-CSharp::CurtainPattern
   cooldown: 2.5
-  columns: 9
-  gapWidth: 2
+  columns: 8
+  gapWidth: 3
   halfWidth: 8
   centerX: 0

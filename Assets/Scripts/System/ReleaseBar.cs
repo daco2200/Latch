@@ -49,11 +49,9 @@ public class ReleaseBar : MonoBehaviour
 
         if (pullAction != null && pullAction.WasPressedThisFrame())
         {
-            Debug.Log($"Pull pressed. Full: {IsFull} ({Value}/{capacity})");
             if (IsFull)
             {
                 GameFlow.Instance.Pull();
-                Debug.Log("Pull executed");
             }
         }
     }

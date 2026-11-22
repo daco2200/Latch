@@ -12,6 +12,8 @@ public class PhaseUI : MonoBehaviour
     [SerializeField] private Color stableColor = new Color(0.10f, 0.10f, 0.10f);
     [SerializeField] private Color challengeColor = new Color(0.24f, 0.20f, 0.07f);
     [SerializeField] private Color textColor = Color.white;
+    [SerializeField] private AlterationManager alterations;
+    [SerializeField] private TMP_Text alterationText;
 
     private void Update()
     {
@@ -37,5 +39,8 @@ public class PhaseUI : MonoBehaviour
 
         bannerText.color = textColor;
         timerText.color = textColor;
+
+        // at the end of Update():
+        alterationText.text = flow.Current == Phase.Challenge ? alterations.Label : "";
     }
 }
