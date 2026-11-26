@@ -16,6 +16,7 @@ public class PlayerShoot : MonoBehaviour
     [SerializeField] private float fireInterval = 0.5f;
 
     private float cooldown;
+    public bool IsHoldingShoot => shootAction != null && shootAction.IsPressed();
 
     private void Awake()
     {

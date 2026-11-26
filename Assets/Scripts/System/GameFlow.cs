@@ -81,6 +81,8 @@ public class GameFlow : MonoBehaviour
 
     private void Start()
     {
+        Cursor.visible = true;
+
         if (skipTitle) { skipTitle = false; StartGame(); }
         else { SetPhase(Phase.Title); Time.timeScale = 0f; }
     }
@@ -186,6 +188,14 @@ public class GameFlow : MonoBehaviour
     private void SetPhase(Phase phase)
     {
         Current = phase;
+        Cursor.visible = phase == Phase.Title ||
+                     phase == Phase.Victory ||
+                     phase == Phase.GameOver;
         PhaseChanged?.Invoke(phase);
+    }
+
+    private void OnApplicationFocus(bool hasFocus)
+    {
+        Cursor.visible = !hasFocus;
     }
 }

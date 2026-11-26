@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 7859597928896964680}
   - component: {fileID: 3002450244906427710}
   - component: {fileID: 2959938315065691100}
+  - component: {fileID: -3380051768402134953}
   m_Layer: 6
   m_Name: Enemy-TypeMaster
   m_TagString: Enemy
@@ -198,6 +199,7 @@ MonoBehaviour:
   rotationWobble: 12
   normalColor: {r: 0.7254902, g: 0.33333334, b: 0.33333334, a: 1}
   telegraphColor: {r: 0.47058824, g: 0.15294118, b: 0.15294118, a: 1}
+  hitColor: {r: 0.764151, g: 0.24870951, b: 0.24870951, a: 1}
   hitFlashTime: 0.06
 --- !u!114 &2959938315065691100
 MonoBehaviour:
@@ -214,6 +216,23 @@ MonoBehaviour:
   fragmentPrefab: {fileID: 5970166355072482245, guid: 9d8908647656cb448b3b41a87754befa, type: 3}
   count: 8
   speed: 6
+--- !u!114 &-3380051768402134953
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1495955856205603636}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01b904c771eee9e4998fb30cedac258c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HitSparks
+  fragmentPrefab: {fileID: 5970166355072482245, guid: 9d8908647656cb448b3b41a87754befa, type: 3}
+  count: 3
+  speed: 4
+  lifetime: 0.25
+  cone: 140
 --- !u!1 &6685470446539335707
 GameObject:
   m_ObjectHideFlags: 0

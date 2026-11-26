@@ -44,12 +44,15 @@ public class EnemyLife : MonoBehaviour
 
         life--;
 
+        // Notificar cada impacto
+        AnyHit?.Invoke(this);
+        Hit?.Invoke(this);
+
         if (life <= 0)
         {
             Died?.Invoke(this);
             AnyDied?.Invoke(this);
-            AnyHit?.Invoke(this);
-            Hit?.Invoke(this);
+
             if (respawn) StartCoroutine(Respawn());
             else Destroy(gameObject);
         }

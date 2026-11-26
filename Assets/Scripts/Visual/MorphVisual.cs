@@ -14,6 +14,7 @@ public class MorphVisual : MonoBehaviour
     [Header("Colors")]
     [SerializeField] private Color normalColor = Color.white;
     [SerializeField] private Color telegraphColor = new Color(0.85f, 0.29f, 0.29f);
+    [SerializeField] private Color hitColor = Color.yellow;
     [SerializeField] private float hitFlashTime = 0.06f;
 
     private Vector3 baseScale;
@@ -39,7 +40,7 @@ public class MorphVisual : MonoBehaviour
         bool telegraphing = Time.time < telegraphUntil;
         bool flashing = Time.time < flashUntil;
 
-        sprite.color = flashing ? Color.white : telegraphing ? telegraphColor : normalColor;
+        sprite.color = flashing ? hitColor : telegraphing ? telegraphColor : normalColor;
 
         if (telegraphing)   // stops trembling right before shooting
         {

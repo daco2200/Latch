@@ -10,10 +10,11 @@ public class Fragment : MonoBehaviour
 
     private void Awake() => sr = GetComponent<SpriteRenderer>();
 
-    public void Launch(Vector2 v)
+    public void Launch(Vector2 v, float life = -1f)
     {
         velocity = v;
         spin = Random.Range(-360f, 360f);
+        if (life > 0f) lifetime = life;
     }
 
     private void Update()
