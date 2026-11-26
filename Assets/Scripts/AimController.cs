@@ -5,6 +5,7 @@ public class AimController : MonoBehaviour
 {
     private PlayerInput playerInput;
     private InputAction pointAction;
+    [SerializeField] private CameraFeedback feedback;
 
     [SerializeField] private Camera mainCamera;
     [SerializeField] private Transform aimPoint;
@@ -27,7 +28,9 @@ public class AimController : MonoBehaviour
         viewportPosition.x = Mathf.Clamp(viewportPosition.x, 0f, 1f);
         viewportPosition.y = Mathf.Clamp(viewportPosition.y, bottomMargin, 1 - topMargin);
 
-        Vector3 worldPosition = mainCamera.ViewportToWorldPoint(viewportPosition);
+        Vector3 worldPosition = feedback != null
+            ? feedback.ViewportToWorldStable(viewportPosition)
+            : mainCamera.ViewportToWorldPoint(viewportPosition);
         worldPosition.z = 0f;
         aimPoint.position = worldPosition;
     }

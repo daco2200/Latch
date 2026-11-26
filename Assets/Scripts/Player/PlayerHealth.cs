@@ -4,6 +4,7 @@ using UnityEngine;
 public class PlayerHealth : MonoBehaviour
 {
     public static event Action PlayerDied;
+    public static event System.Action Damaged;
 
     [Header("Hull (regenerates)")]
     [SerializeField] private float maxHull = 30f;
@@ -68,6 +69,7 @@ public class PlayerHealth : MonoBehaviour
         if (Time.time < invulnerableUntil) return;
 
         TakeDamage(damagePerHit);
+        Damaged?.Invoke();
         invulnerableUntil = Time.time + invulnerableTime;
     }
 

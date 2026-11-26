@@ -8,6 +8,9 @@ public class EnemyShooter : MonoBehaviour
     [SerializeField] private bool changePatternEachShot;      // ON for the boss
     [SerializeField] private Vector2 firstDelayRange = new Vector2(0.3f, 2f);
 
+    [SerializeField] private MorphVisual visual;
+    [SerializeField] private float telegraphTime = 0.4f;
+
     private EnemyMover mover;
     private EnemyBulletPool pool;
     private PatternContext context;
@@ -29,6 +32,8 @@ public class EnemyShooter : MonoBehaviour
         pattern = Pick();
         jitter = Random.Range(0.8f, 1.25f);
         timer = Random.Range(firstDelayRange.x, firstDelayRange.y);
+
+        if (visual == null) visual = GetComponent<MorphVisual>();
 
         PlayerHealth player = FindFirstObjectByType<PlayerHealth>();
         context = new PatternContext
@@ -61,6 +66,11 @@ public class EnemyShooter : MonoBehaviour
     private IEnumerator Run()
     {
         firing = true;
+        if (visual != null)
+        {
+            visual.Telegraph(telegraphTime);
+            yield return new WaitForSeconds(telegraphTime);
+        }
         yield return pattern.Execute(context);
         firing = false;
     }

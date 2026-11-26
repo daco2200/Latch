@@ -5,6 +5,7 @@ public class PlayerShoot : MonoBehaviour
 {
     private PlayerInput playerInput;
     private InputAction shootAction;
+    public static event System.Action Fired;
 
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private Transform pool;
@@ -55,6 +56,7 @@ public class PlayerShoot : MonoBehaviour
                     bullet.transform.rotation = Quaternion.Euler(0f, 0f, angle - 90f);
                     cooldown += fireInterval;
                     bullet.SetActive(true);
+                    Fired?.Invoke();
                     energy.TrySpend();
                     return;
                 }

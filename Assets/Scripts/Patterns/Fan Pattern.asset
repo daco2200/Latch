@@ -9,11 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e32e12e02c46b544bddeb8f2bc47383, type: 3}
-  m_Name: New Curtain Pattern
-  m_EditorClassIdentifier: Assembly-CSharp::CurtainPattern
+  m_Script: {fileID: 11500000, guid: 2587a69783bc18d48987808d0a9b67b1, type: 3}
+  m_Name: Fan Pattern
+  m_EditorClassIdentifier: Assembly-CSharp::FanPattern
   cooldown: 2.5
-  columns: 8
-  gapWidth: 3
-  halfWidth: 8
-  centerX: 0
+  bullets: 3
+  arc: 40

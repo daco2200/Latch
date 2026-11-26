@@ -9,8 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe1b615c9ab4a91428b2bc7b97c90a43, type: 3}
-  m_Name: New Ring Pattern
-  m_EditorClassIdentifier: Assembly-CSharp::RingPattern
+  m_Script: {fileID: 11500000, guid: b249de0d394ff3247a271f6bb84c1636, type: 3}
+  m_Name: Sweep Pattern
+  m_EditorClassIdentifier: Assembly-CSharp::SweepPattern
   cooldown: 2.5
-  bullets: 12
+  bullets: 10
+  stepTime: 0.08
+  arc: 80

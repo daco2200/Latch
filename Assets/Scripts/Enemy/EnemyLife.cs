@@ -19,6 +19,9 @@ public class EnemyLife : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private int maxLife;
 
+    public event System.Action<EnemyLife> Hit;
+    public float Health01 => maxLife > 0 ? (float)life / maxLife : 0f;
+
     private void Awake()
     {
         maxLife = life;
@@ -46,6 +49,7 @@ public class EnemyLife : MonoBehaviour
             Died?.Invoke(this);
             AnyDied?.Invoke(this);
             AnyHit?.Invoke(this);
+            Hit?.Invoke(this);
             if (respawn) StartCoroutine(Respawn());
             else Destroy(gameObject);
         }

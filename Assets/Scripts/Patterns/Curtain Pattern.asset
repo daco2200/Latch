@@ -9,10 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b249de0d394ff3247a271f6bb84c1636, type: 3}
-  m_Name: New Sweep Pattern
-  m_EditorClassIdentifier: Assembly-CSharp::SweepPattern
+  m_Script: {fileID: 11500000, guid: 6e32e12e02c46b544bddeb8f2bc47383, type: 3}
+  m_Name: Curtain Pattern
+  m_EditorClassIdentifier: Assembly-CSharp::CurtainPattern
   cooldown: 2.5
-  bullets: 10
-  stepTime: 0.08
-  arc: 80
+  columns: 8
+  gapWidth: 3
+  halfWidth: 8
+  centerX: 0

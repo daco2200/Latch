@@ -4,7 +4,7 @@ using UnityEngine;
 public class PhaseUI : MonoBehaviour
 {
     [SerializeField] private GameFlow flow;
-    [SerializeField] private Camera cam;                 // Clear Flags = Solid Color
+    [SerializeField] private Camera cam;
     [SerializeField] private TMP_Text bannerText;
     [SerializeField] private TMP_Text timerText;
 
