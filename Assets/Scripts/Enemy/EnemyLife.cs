@@ -6,6 +6,7 @@ public class EnemyLife : MonoBehaviour
 {
     public static event System.Action<EnemyLife> AnyDied;
     public static event System.Action<EnemyLife> AnyHit;
+    public static event System.Action<EnemyLife> AnyDissolved;
 
     public event System.Action<EnemyLife> Died;
 
@@ -33,6 +34,7 @@ public class EnemyLife : MonoBehaviour
     {
         if (life <= 0) return;
         life = 0;
+        AnyDissolved?.Invoke(this);
         Died?.Invoke(this);   // frees its spawner slot; AnyDied is NOT raised, so it doesn't count as a kill
         Destroy(gameObject);
     }

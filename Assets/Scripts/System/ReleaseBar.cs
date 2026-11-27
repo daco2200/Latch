@@ -4,6 +4,9 @@ using UnityEngine.UI;
 
 public class ReleaseBar : MonoBehaviour
 {
+    public static event System.Action Ready;
+    [SerializeField] private PlayerInput input;
+
     [SerializeField] private float capacity = 100f;
     [SerializeField] private float gainPerHit = 5f;     // 20 hits to fill
     [SerializeField] private Image fill;                // optional: Image Type = Filled, Horizontal
@@ -16,7 +19,6 @@ public class ReleaseBar : MonoBehaviour
 
     private void Awake()
     {
-        PlayerInput input = GetComponent<PlayerInput>();
         pullAction = input != null ? input.actions.FindAction("Pull", false) : null;
         if (pullAction == null)
             Debug.LogError("ReleaseBar: action 'Pull' not found. Is this on the same object as PlayerInput?", this);
@@ -38,7 +40,11 @@ public class ReleaseBar : MonoBehaviour
     {
         // Only fills during a challenge
         if (GameFlow.Instance == null || GameFlow.Instance.Current != Phase.Challenge) return;
+        bool wasFull = IsFull;
         Value = Mathf.Min(capacity, Value + gainPerHit);
+        if (!wasFull && IsFull) Ready?.Invoke();
+
+
     }
 
     private void OnChallengeEnded(ChallengeResult result) => Value = 0f;

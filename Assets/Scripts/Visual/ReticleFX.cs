@@ -22,6 +22,7 @@ public class ReticleFX : MonoBehaviour
     [SerializeField] private Color canShoot = Color.white;
     [SerializeField] private Color cannotShoot = new Color(0.5f, 0.5f, 0.5f);
     [SerializeField] private Color onEnemy = new Color(0.9f, 0.76f, 0.35f);   // gold
+    public Color CurrentColor { get; private set; } = Color.white;
 
     [Header("Oscillation (opens while firing)")]
     [SerializeField] private float bloomPerShot = 0.05f;
@@ -44,6 +45,7 @@ public class ReticleFX : MonoBehaviour
     private Vector3 centerBase;
     private float bloom, hitTimer, killTimer;
     private int hitSign = 1;
+    private float centerTimer;
 
     private void Awake()
     {
@@ -69,7 +71,11 @@ public class ReticleFX : MonoBehaviour
         EnemyLife.AnyDied -= OnKill;
     }
 
-    private void OnFired() => bloom = Mathf.Min(maxBloom, bloom + bloomPerShot);
+    private void OnFired()
+    {
+        bloom = Mathf.Min(maxBloom, bloom + bloomPerShot);
+        centerTimer = swapThreshold;
+    }
 
     private void OnHit(EnemyLife enemy)
     {
@@ -88,13 +94,14 @@ public class ReticleFX : MonoBehaviour
         float k = maxBloom > 0f ? bloom / maxBloom : 0f;
         center.localScale = centerBase * (1f + centerPulse * k);
 
-        centerRenderer.sprite = playerShoot.IsHoldingShoot ? firingSprite : idleSprite;
+        centerTimer = Mathf.Max(0f, centerTimer - Time.deltaTime);
+        centerRenderer.sprite = centerTimer > 0f ? firingSprite : idleSprite;
 
         // State: gold = over enemy, gray = can't shoot, white = default
         bool blocked = !energy.CanFire || RuleState.WeaponJammed;
         bool overEnemy = Physics2D.OverlapPoint(transform.position, enemyMask) != null;
 
-        Tint(overEnemy ? onEnemy : blocked ? cannotShoot : canShoot);
+        Tint(blocked ? cannotShoot : overEnemy ? onEnemy : canShoot);
 
         // Markers
         UpdateMarker(hitMarker, ref hitTimer, hitTime, hitPunch, hitAngle * hitSign);
@@ -103,6 +110,7 @@ public class ReticleFX : MonoBehaviour
 
     private void Tint(Color c)
     {
+        CurrentColor = c;
         foreach (SpriteRenderer s in spriteParts) if (s != null) s.color = c;
         foreach (Graphic g in uiParts) if (g != null) g.color = c;
     }
