@@ -8,6 +8,16 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] private float speed = 8f;
     [SerializeField] private float railMinMax = 8f;
+
+    public float MoveInput
+    {
+        get
+        {
+            float input = moveAction.ReadValue<float>();
+            return RuleState.InvertControls ? -input : input;
+        }
+    }
+
     private Rigidbody2D rb2d;
 
     private void Awake()
@@ -19,7 +29,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        float moveX = moveAction.ReadValue<float>();
+        float moveX = MoveInput;
         if (RuleState.InvertControls) moveX = -moveX;
 
         rb2d.linearVelocity = new Vector2(moveX * speed, 0f);
