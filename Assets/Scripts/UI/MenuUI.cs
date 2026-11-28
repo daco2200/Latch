@@ -1,4 +1,5 @@
 
+using TMPro;
 using UnityEngine;
 
 public class MenuUI : MonoBehaviour
@@ -9,16 +10,36 @@ public class MenuUI : MonoBehaviour
     [SerializeField] private GameObject restartPanel;
     [SerializeField] private GameObject creditsPanel;
 
-    private void OnEnable()
+    [Header("End Screen")]
+    [SerializeField] private TMP_Text endText;
+
+    private GameFlow flow;
+
+    private void Start()
     {
-        if (GameFlow.Instance != null)
-            GameFlow.Instance.PhaseChanged += OnPhaseChanged;
+        flow = GameFlow.Instance;
+
+        if (flow != null)
+        {
+            flow.PhaseChanged += OnPhaseChanged;
+            OnPhaseChanged(flow.Current);
+        }
+        else
+        {
+            Debug.LogError("GameFlow.Instance no encontrado.");
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (flow != null)
+            flow.PhaseChanged -= OnPhaseChanged;
     }
 
     private void OnDisable()
     {
-        if (GameFlow.Instance != null)
-            GameFlow.Instance.PhaseChanged -= OnPhaseChanged;
+        if (flow != null)
+            flow.PhaseChanged -= OnPhaseChanged;
     }
 
     private void OnPhaseChanged(Phase phase)
@@ -31,9 +52,14 @@ public class MenuUI : MonoBehaviour
                 startPanel.SetActive(true);
                 break;
 
+            case Phase.Stable:
+            case Phase.Challenge:
+                break;
+
             case Phase.GameOver:
             case Phase.Victory:
                 restartPanel.SetActive(true);
+                endText.text = phase == Phase.Victory ? "VICTORY" : "GAME OVER";
                 break;
         }
     }
@@ -48,7 +74,7 @@ public class MenuUI : MonoBehaviour
 
     public void StartGame()
     {
-        GameFlow.Instance.StartGame();
+        flow.StartGame();
     }
 
     public void ShowTutorial()
@@ -71,6 +97,6 @@ public class MenuUI : MonoBehaviour
 
     public void RestartGame()
     {
-        GameFlow.Instance.Restart();
+        flow.Restart();
     }
 }

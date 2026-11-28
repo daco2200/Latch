@@ -196,6 +196,9 @@ public class GameFlow : MonoBehaviour
 
     private void OnApplicationFocus(bool hasFocus)
     {
-        Cursor.visible = !hasFocus;
+        Cursor.visible = !hasFocus ||
+                         Current == Phase.Title ||
+                         Current == Phase.Victory ||
+                         Current == Phase.GameOver;
     }
 }

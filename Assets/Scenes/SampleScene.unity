@@ -5155,7 +5155,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1391259884}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e4c726c6ce7b7004592b6e3653296cbe, type: 3}
   m_Name: 
@@ -5210,6 +5210,7 @@ MonoBehaviour:
   tutorialPanel: {fileID: 1095310962}
   restartPanel: {fileID: 1676941235}
   creditsPanel: {fileID: 1363803714}
+  endText: {fileID: 769553747}
 --- !u!1 &1393170700
 GameObject:
   m_ObjectHideFlags: 0
@@ -6101,9 +6102,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f92d4a7c3fd5cc64e85485736803ba9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameFlow
-  stableDurationRange: {x: 5, y: 10}
+  stableDurationRange: {x: 20, y: 40}
   killTargets: 060000000a0000000e000000
-  markedTargets: 040000000600000008000000
+  markedTargets: 05000000080000000b000000
   levelTimes:
   - 35
   - 45
